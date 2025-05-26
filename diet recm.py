@@ -1,3 +1,9 @@
+import streamlit as st
+st.set_page_config(
+    page_title="식단 추천기",
+    page_icon="🍗",
+    layout="centered"
+)
 meals = [
     {"name": "한식 A", "items": ["불고기", "밥", "김치"], "calories": 700, "ingredients": ["소고기", "쌀", "배추"]},
     {"name": "양식 B", "items": ["스파게티", "샐러드"], "calories": 650, "ingredients": ["밀가루", "계란", "토마토"]},
@@ -18,7 +24,6 @@ def calculate_bmr(gender, kg, age):
         return 65.5 + (9.6 * kg) + (1.8 * 16) - (4.7 * age)
     else:
         return None
-
 def recommend_meals(meals, allergies, bmr):
     results = [] #식단 결과 리스트
     for meal in meals:
@@ -32,8 +37,9 @@ def recommend_meals(meals, allergies, bmr):
             if bmr - 200 <= meal["calories"] <= bmr + 200:
                 results.append(meal)
     return results
-
-gender = input("성별을 입력하세요 (남/여): ")
+gender = '공백'
+while gender != '남' and gender != '여':
+    gender = input("성별을 입력하세요 (남/여): ")
 age = int(input("나이를 입력하세요: "))
 weight = float(input("몸무게를 입력하세요 (kg): "))
 allergy_input = input("알러지 정보를 입력하세요 (예: 우유,계란,땅콩) : ")
@@ -43,7 +49,7 @@ allergies = [a.strip() for a in allergy_input.split(",")]
 bmr = calculate_bmr(gender, weight, age)
 
 if bmr is None:
-    print("성별 입력이 잘못되었습니다. 프로그램을 종료합니다.")
+    print("오류 발생. 프로그램을 종료합니다.")
 else:
     print(f"당신의 추천 섭취 칼로리는 약 {int(bmr)} kcal입니다.")
 
