@@ -1,65 +1,67 @@
+import csv
 import streamlit as st
-st.set_page_config(
-    page_title="식단 추천기",
-    page_icon="🍗",
-    layout="centered"
-)
-meals = [
-    {"name": "한식 A", "items": ["불고기", "밥", "김치"], "calories": 700, "ingredients": ["소고기", "쌀", "배추"]},
-    {"name": "양식 B", "items": ["스파게티", "샐러드"], "calories": 650, "ingredients": ["밀가루", "계란", "토마토"]},
-    {"name": "채식 C", "items": ["샐러드", "두부스테이크"], "calories": 500, "ingredients": ["두부", "양상추", "오이"]},
-    {"name": "간편식 D", "items": ["김밥", "계란찜"], "calories": 600, "ingredients": ["쌀", "계란", "당근"]},
-    {"name": "한식 E", "items": ["된장찌개", "밥", "나물"], "calories": 550, "ingredients": ["된장", "두부", "시금치", "쌀"]},
-    {"name": "양식 F", "items": ["치킨샐러드", "감자수프"], "calories": 720, "ingredients": ["닭고기", "감자", "우유"]},
-    {"name": "분식 G", "items": ["떡볶이", "순대"], "calories": 800, "ingredients": ["쌀떡", "고추장", "돼지내장"]},
-    {"name": "일식 H", "items": ["초밥", "미소국"], "calories": 650, "ingredients": ["생선", "쌀", "된장"]},
-    {"name": "간편식 I", "items": ["샌드위치", "과일주스"], "calories": 580, "ingredients": ["밀가루", "햄", "사과"]},
-    {"name": "한식 J", "items": ["잡곡밥", "닭가슴살", "브로콜리"], "calories": 630, "ingredients": ["현미", "닭고기", "브로콜리"]}
-]
 
-def calculate_bmr(gender, kg, age):
+# CSV에서 식단 데이터 불러오기
+meals = []
+with open("meals_50.csv", encoding="utf-8") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        meal = {
+            "name": row["name"],
+            "items": [item.strip() for item in row["items"].split(",")],
+            "calories": int(row["calories"]),
+            "ingredients": [ing.strip() for ing in row["ingredients"].split(",")]
+        }
+        meals.append(meal)
+
+# BMR 계산 함수
+def calculate_bmr(gender, kg, height, age):
     if gender == '남':
-        return 66 + (13.7 * kg) + (5 * 17) - (6.8 * age)
+        return 66 + (1.37 * kg) + (5 * height) - (6.8 * age)
     elif gender == '여':
-        return 65.5 + (9.6 * kg) + (1.8 * 16) - (4.7 * age)
+        return 65.5 + (0.96 * kg) + (1.8 * height) - (4.7 * age)
     else:
         return None
+
+# 식단 추천 함수
 def recommend_meals(meals, allergies, bmr):
-    results = [] #식단 결과 리스트
+    results = []
     for meal in meals:
-        has_allergy = False#알러지 확인을 위한 변수
-        for ingredient in meal["ingredients"]:
-            if ingredient in allergies:
-                has_allergy = True
-                break
-        if not has_allergy:
-            # 칼로리가 목표보다 오차범위 200 안에 있으면 추천
-            if bmr - 200 <= meal["calories"] <= bmr + 200:
-                results.append(meal)
+        has_allergy = any(ingredient in allergies for ingredient in meal["ingredients"])
+        if not has_allergy and (bmr - 200 <= meal["calories"] <= bmr + 200):
+            results.append(meal)
     return results
-gender = '공백'
-while gender != '남' and gender != '여':
-    gender = input("성별을 입력하세요 (남/여): ")
-age = int(input("나이를 입력하세요: "))
-weight = float(input("몸무게를 입력하세요 (kg): "))
-allergy_input = input("알러지 정보를 입력하세요 (예: 우유,계란,땅콩) : ")
 
-allergies = [a.strip() for a in allergy_input.split(",")]
+# Streamlit UI 시작
+st.title("식단 추천 웹앱 🍽️")
+st.markdown("당신의 건강과 알러지를 고려한 맞춤 식단을 추천해드립니다.")
 
-bmr = calculate_bmr(gender, weight, age)
+# 사용자 입력 받기
+gender = st.selectbox("성별을 선택하세요", ["남", "여"])
+age = st.number_input("나이", min_value=1, max_value=120, value=25)
+height = st.number_input("키 (cm)", min_value=100.0, max_value=250.0, value=170.0)
+weight = st.number_input("몸무게 (kg)", min_value=30.0, max_value=200.0, value=70.0)
+allergy_input = st.text_input("알러지 정보를 입력하세요 (예: 우유,계란,땅콩)", "")
 
-if bmr is None:
-    print("오류 발생. 프로그램을 종료합니다.")
-else:
-    print(f"당신의 추천 섭취 칼로리는 약 {int(bmr)} kcal입니다.")
+# 입력값 정리
+allergies = [a.strip() for a in allergy_input.split(",") if a.strip() != ""]
 
-recommended = recommend_meals(meals, allergies, bmr)
+# 버튼 클릭 시 실행
+if st.button("식단 추천받기"):
+    bmr = calculate_bmr(gender, weight, height, age)
 
-if len(recommended) == 0:
-    print("죄송합니다. 조건에 맞는 식단이 없습니다.")
-else:
-    print("추천된 식단:")
-    for meal in recommended:
-        print(f"\n[{meal['name']}]")
-        print("음식:", ", ".join(meal["items"]))
-        print(f"총 칼로리: {meal['calories']} kcal")
+    if bmr is None:
+        st.error("성별 정보가 올바르지 않습니다.")
+    else:
+        st.success(f"추천 섭취 칼로리는 약 {int(bmr)} kcal입니다.")
+        recommended = recommend_meals(meals, allergies, bmr)
+
+        if len(recommended) == 0:
+            st.warning("조건에 맞는 식단이 없습니다.")
+        else:
+            st.subheader("추천된 식단 리스트 🥗")
+            for meal in recommended:
+                st.markdown(f"### {meal['name']}")
+                st.write("음식:", ", ".join(meal["items"]))
+                st.write("총 칼로리:", f"{meal['calories']} kcal")
+                st.markdown("---")
