@@ -52,8 +52,8 @@ st.write("영양소 범위와 알러지 정보 기반으로 개인 맞춤 식단
 
 gender = st.selectbox("성별", ["남", "여"])
 age = st.number_input("나이", min_value=1, max_value=120, step=1)
-height = st.number_input("키 (cm)", min_value=100.0, max_value=250.0)
-weight = st.number_input("몸무게 (kg)", min_value=30.0, max_value=200.0)
+height = st.number_input("키 (cm)", min_value=100.0, max_value=250.0, step=1)
+weight = st.number_input("몸무게 (kg)", min_value=30.0, max_value=200.0, step=1)
 allergy_input = st.text_input("알러지 정보를 입력하세요 (예: 우유,계란,땅콩)")
 
 # 영양소 필터 범위 설정
