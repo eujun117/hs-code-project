@@ -45,7 +45,7 @@ meals = [
 ]
 
 # BMR 계산 함수
-def calculate_bmr(gender, kg, height, age):
+def calculate_bmr(gender, weight, height, age):
     if gender == '남':
         return 66 + (1.37 * kg) + (5 * height) - (6.8 * age)
     elif gender == '여':
