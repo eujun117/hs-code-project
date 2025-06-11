@@ -73,7 +73,9 @@ selected_tags = st.multiselect("식단 태그 선택", all_tags)
 
 if st.button("식단 추천받기"):
     allergies = [a.strip() for a in allergy_input.split(",") if a.strip()]
-    bmr = calculate_bmr(gender, weight, height, age)
+    
+    # 모든 인자를 float로 변환하여 BMR 계산
+    bmr = calculate_bmr(gender, float(weight), float(height), float(age))
 
     if bmr is None:
         st.error("BMR 계산 중 오류가 발생했습니다.")
