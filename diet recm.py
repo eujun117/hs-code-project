@@ -45,12 +45,13 @@ meals = [
 ]
 
 # BMR 계산 함수
-def calculate_bmr(gender, kg, age):
+def calculate_bmr(gender, kg, height, age):
     if gender == '남':
-        return 66 + (13.7 * kg) + (5 * 170) - (6.8 * age)
+        return 66 + (1.37 * kg) + (5 * height) - (6.8 * age)
     elif gender == '여':
-        return 65.5 + (9.6 * kg) + (1.8 * 160) - (4.7 * age)
-
+        return 65.5 + (0.96 * kg) + (1.8 * height) - (4.7 * age)
+    else:
+        return None
 # 추천 함수
 def recommend_meals(meals, allergies, bmr, selected_tags):
     results = []
