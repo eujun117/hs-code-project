@@ -50,10 +50,17 @@ def recommend_meals(meals, allergies, bmr, carb_range, protein_range, fat_range,
 st.title("식단 추천 웹앱")
 st.write("영양소 범위와 알러지 정보 기반으로 개인 맞춤 식단을 추천해드립니다.")
 
+# 사용자 입력
 gender = st.selectbox("성별", ["남", "여"])
+
+# int형: 나이 (전부 int로 통일)
 age = st.number_input("나이", min_value=1, max_value=120, value=25, step=1)
+
+# float형: 키, 몸무게 (전부 float로 통일)
 height = st.number_input("키 (cm)", min_value=100.0, max_value=250.0, value=170.0, step=1.0)
 weight = st.number_input("몸무게 (kg)", min_value=30.0, max_value=200.0, value=70.0, step=1.0)
+
+# 알러지 입력 (문자열)
 allergy_input = st.text_input("알러지 정보를 입력하세요 (예: 우유,계란,땅콩)")
 
 # 영양소 필터 범위 설정
