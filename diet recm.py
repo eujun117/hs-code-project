@@ -47,9 +47,9 @@ meals = [
 # BMR 계산 함수
 def calculate_bmr(gender, weight, height, age):
     if gender == '남':
-        return 66 + (1.37 * kg) + (5 * height) - (6.8 * age)
+        return 66 + (1.37 * weight) + (5 * height) - (6.8 * age)
     elif gender == '여':
-        return 65.5 + (0.96 * kg) + (1.8 * height) - (4.7 * age)
+        return 65.5 + (0.96 * weight) + (1.8 * height) - (4.7 * age)
     else:
         return None
 # 추천 함수
@@ -71,6 +71,7 @@ st.title("태그 기반 식단 추천 앱")
 gender = st.selectbox("성별", ["남", "여"])
 age = st.number_input("나이", 1, 120, step=1)
 weight = st.number_input("몸무게 (kg)", 30.0, 200.0, step=1.0)
+height = st.number_input("키 (cm)", 30.0, 210.0, step=0.1)
 allergy_input = st.text_input("알러지 정보를 입력하세요 (예: 우유,계란,땅콩)")
 
 # 식단 태그 선택
