@@ -58,7 +58,7 @@ def recommend_meals(meals, allergies, bmr, selected_tags):
     for meal in meals:
         if any(ing in allergies for ing in meal["ingredients"]):
             continue
-        if not (bmr - 200 <= meal["calories"] <= bmr + 200):
+        if not (bmr - 50 <= meal["calories"] <= bmr + 50):
             continue
         if selected_tags and not any(tag in meal["tags"] for tag in selected_tags):
             continue
@@ -66,7 +66,7 @@ def recommend_meals(meals, allergies, bmr, selected_tags):
     return results
 
 # --- Streamlit UI ---
-st.title("태그 기반 식단 추천 앱")
+st.title("식단 추천 웹")
 
 gender = st.selectbox("성별", ["남", "여"])
 age = st.number_input("나이", 1, 120, step=1)
@@ -74,7 +74,7 @@ weight = st.number_input("몸무게 (kg)", 30.0, 200.0, step=1.0)
 height = st.number_input("키 (cm)", 30.0, 210.0, step=0.1)
 allergy_input = st.text_input("알러지 정보를 입력하세요 (예: 우유,계란,땅콩)")
 
-# 식단 태그 선택
+# 식단 태그 선택 (gpt 도움)
 all_tags = sorted({tag for meal in meals for tag in meal["tags"]})
 selected_tags = st.multiselect("원하는 식단 특징을 선택하세요", all_tags)
 
